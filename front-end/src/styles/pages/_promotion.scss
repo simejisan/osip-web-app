@@ -1,0 +1,87 @@
+.promotion-filter {
+  position: -webkit-sticky;
+  position: sticky;
+
+  top: 30px;
+}
+
+.promotion-card {
+  @include transition(all .5s);
+
+  .card-header {
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+  }
+
+  .card-image-wrapper {
+    height: 150px;
+    overflow: hidden;
+    position: relative;
+
+    z-index: 0;
+
+    .card-img-top {
+      border-radius: 0 !important;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .card-body {
+    .card-title {
+      font-size: 14px;
+    }
+
+    .card-title, .card-subtitle {
+      max-height: 100px;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &--deal {
+    width: 30%;
+    min-width: 80px;
+    height: 10%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    position: absolute;
+    top: calc(20px + 30px);
+    left: 0;
+
+    z-index: 1;
+
+    background-color: rgba(134,84,231,.8);
+
+    border-bottom-right-radius: 50%;
+
+    &--text {
+      font-size: 1.15em;
+      font-weight: bold;
+      color: white;
+    }
+  }
+
+  &:hover {
+    box-shadow: none;
+    border: 2px solid $app-primary;
+    cursor: pointer;
+
+    .card-title {
+      color: $app-primary;
+    }
+  }
+}

@@ -1,0 +1,204 @@
+/*Login Styles*/
+/*Login Styles*/
+
+$login-gradient: linear-gradient(to bottom, #200142, #2c0745, #371049, #42184c, #4b2150, #4b214f, #4a214e, #4a214d, #401947, #371041, #2d083c, #230036);
+$login-bg-image-url: "../assets/images/sign-bg.jpg";
+
+.login-container {
+  position: relative;
+  height: 100%;
+}
+
+.login-content {
+  width: 420px;
+  margin: auto;
+  padding: 35px 35px 20px;
+  background-color: $white;
+  @include box-shadow($shadow);
+  @include border-radius(4px);
+  font-size: 14px;
+  max-width: 94%;
+}
+
+.login-header {
+  margin-bottom: 30px;
+}
+
+.login-content .form-control {
+  background-color: map_get($gray, lighten-4);
+
+  &:focus {
+    box-shadow: none;
+    border-color: $app-primary;
+  }
+}
+
+.login-content .btn, .login-content .jr-btn {
+  padding: 10px 35px !important;
+}
+
+.app-login-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+
+  & .loader-view {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+  }
+
+  &:after, &:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &:before {
+    z-index: -1;
+    opacity: 0.6;
+    background-image: $login-gradient;
+  }
+
+  &:after {
+    z-index: -10;
+
+    @include background($login-bg-image-url, center center);
+  }
+}
+
+.app-login-main-content {
+  @include display-flex();
+  background-color: $white;
+  @include box-shadow($shadow);
+  @include border-radius(10px);
+  max-width: 680px;
+  font-size: 14px;
+  overflow: hidden;
+  margin: 2rem;
+}
+
+.app-login-content {
+  padding: 35px 35px 20px;
+  width: 60%;
+  order: 1;
+
+  @media screen and (max-width: 575px) {
+    width: 100%;
+    order: 2;
+  }
+}
+
+.app-login-header {
+  margin-bottom: 30px;
+}
+
+.app-login-content .form-control {
+  background-color: map_get($gray, lighten-4);
+
+  &:focus {
+    box-shadow: none;
+    border-color: $app-primary;
+  }
+}
+
+.app-login-content .btn, .login-content .jr-btn {
+  padding: 10px 35px !important;
+}
+
+.app-logo-content {
+  position: relative;
+
+  padding: 35px 35px 20px;
+  width: 40%;
+  order: 2;
+  z-index: 10;
+
+  @media screen and (max-width: 575px) {
+    width: 100%;
+    order: 1;
+  }
+
+  img {
+    opacity: 0.9;
+
+    @include filter(blur(2px));
+    @include transition(300ms);
+  }
+
+  &:after, &:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &:after {
+    z-index: -10;
+    @include background($login-bg-image-url, center center);
+    transform: scaleX(-1);
+  }
+
+  &:before {
+    z-index: -1;
+    background-color: $app-primary;
+    opacity: 0.8;
+    left: 100%;
+
+    @include transition(200ms);
+  }
+
+  &:hover {
+    &:before {
+      left: 0;
+    }
+
+    img {
+      @include filter(blur(0));
+      opacity: 1;
+    }
+  }
+}
+
+.app-social-block {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(space-between);
+
+  & .social-link,
+  & .social-link li {
+    margin: 0;
+  }
+
+  & .social-link button {
+    border: solid 1px $app-primary;
+    @include border-radius(50%);
+    color: $app-primary;
+    padding: 0;
+
+    &:hover,
+    &:focus {
+      color: $white;
+      background-color: $app-primary;
+    }
+  }
+
+  & p {
+    margin-bottom: 0;
+  }
+}

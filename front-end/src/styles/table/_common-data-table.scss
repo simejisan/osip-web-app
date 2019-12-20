@@ -1,0 +1,25 @@
+.common-data-table {
+  overflow: scroll;
+
+  table {
+    thead {
+      background-image: radial-gradient(circle, #34048b, #3f038e, #490291, #530194, #5c0097);
+
+      border-radius: 4px;
+
+      tr {
+        th {
+          padding: 15px 56px 15px 24px;
+
+          span {
+            color: white !important;
+
+            &:hover {
+              color: lighten($app-primary, 20) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,118 @@
+.shop-image-header {
+  width: 100%;
+  height: 120px;
+
+  position: relative;
+  z-index: 1;
+
+  overflow: hidden;
+
+  .shop-logo {
+    border-radius: 50%;
+    border: 5px white solid;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    @include transition(all 0.5s);
+  }
+
+  .shop-name {
+    opacity: 0;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    @include transition(all 0.5s);
+
+    .shop-name--title {
+      font-weight: bold;
+      font-size: 2.2em;
+      text-transform: uppercase;
+      margin: 0;
+      color: white;
+    }
+
+    .shop-name--link {
+      font-size: 1.2em;
+
+      a {
+        text-decoration: none;
+        color: #d6d6d6 !important;
+      }
+    }
+  }
+
+  &:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -10;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: black;
+    @include transition(all 0.5s);
+  }
+
+  &:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    @include gradient-x-three-colors(#872776, #4f257a, 50%, #352883);
+    opacity: 0.5;
+  }
+
+  &.sendo {
+    &:after {
+      @include background("../assets/images/shops/sendoBG.jpg", center center);
+    }
+  }
+
+  &.tiki {
+    &:after {
+      @include background("../assets/images/shops/tikiBG.jpg", center center);
+    }
+  }
+
+  &.shopee {
+    &:after {
+      @include background("../assets/images/shops/shopeeBG.jpg", center center);
+    }
+  }
+
+  &.google {
+    &:after {
+      @include background("../assets/images/shops/googleBG.png", center center);
+    }
+  }
+
+  &:hover {
+    .shop-logo {
+      transform: translate(-130%, -50%);
+    }
+
+    .shop-name {
+      opacity: 1;
+      transform: translate(-10%, -50%);
+    }
+
+    &:after {
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+    }
+  }
+}

@@ -1,0 +1,42 @@
+.suggestion-header {
+  width: 100%;
+  height: 200px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 1.5rem;
+
+  &--content {
+    width: 100%;
+    max-width: 300px;
+    height: 100%;
+
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+
+    @include background("../assets/images/suggestion/suggestion_waiting.gif", center center, no-repeat, 150%);
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+
+      @include background("../assets/images/suggestion/suggestion_searching.gif", center center, no-repeat, cover);
+      @include transition(all 0.5s);
+    }
+  }
+
+  &.waiting {
+    .suggestion-header--content {
+      &:after {
+        top: 200px;
+      }
+    }
+  }
+}

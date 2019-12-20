@@ -1,0 +1,23 @@
+.notification {
+  padding: 15px;
+
+  .title {
+    color: #fff;
+  }
+
+  &:before {
+    display: none;
+  }
+
+  &.notification-error {
+    border-left: 8px solid #942c27;
+  }
+}
+
+.react-notification-root {
+  .notification-item {
+    &:before {
+      display: none;
+    }
+  }
+}
