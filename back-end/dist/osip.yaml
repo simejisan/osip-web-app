@@ -1,0 +1,1792 @@
+openapi: 3.0.0
+info:
+  title: APIs document O.S.I.P
+  version: 1.0.0
+tags:
+  - name: user
+    description: Router cho User
+  - name: function
+    description: Router cho function
+  - name: role
+    description: Router cho role
+  - name: hotwords
+    description: Router cho hotwords
+  - name: promotions
+    description: Router cho promotions
+  - name: flashsale
+    description: Router cho flashsale
+  - name: suggestwords
+    description: Router cho suggestwords
+  - name: favorites
+    description: Router cho favorites
+  - name: email
+    description: Router cho email
+servers:
+  - url: https://osip-server.herokuapp.com
+    description: Main (production) server
+paths:
+  /users/register:
+    post:
+      tags:
+        - user
+      summary: Đăng ký cho người dùng
+      description: API đăng ký người dùng cho hệ thống
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nguyen Van A"
+                email:
+                  type: string
+                  example: "ahihi@gmail.com"
+                password:
+                  type: string
+                  example: "12345678"
+                repassword:
+                  type: string
+                  example: "12345678"
+                avatar_url:
+                  type: string
+                  example: "https://lh3.googleusercontent.com/-fWLtCjE-brE/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcI4HMQaIG0nfAIg5a_Pwo5_awuUw.CMID/s64-c/photo.jpg"
+      responses:
+        "200":
+          description: Đăng ký thông tin thành công
+        "400":
+          description: Email này đã được sử dụng
+        "500":
+          description: Lỗi truy vấn thông tin người dùng
+  /users/login:
+    post:
+      tags:
+        - user
+      summary: Đăng nhập cho người dùng
+      description: API đăng nhập cho người dùng hệ thống
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "ahihi@gmail.com"
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        "200":
+          description: Trả về thông tin người dùng hệ thống
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "1415577814278607901"
+                      name:
+                        type: string
+                        example: "Nguyen Van A"
+                      email:
+                        type: string
+                        example: "ahihi@gmail.com"
+                      avatar_url:
+                        type: string
+                        example: "https://lh3.googleusercontent.com/-fWLtCjE-brE/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcI4HMQaIG0nfAIg5a_Pwo5_awuUw.CMID/s64-c/photo.jpg"
+                  access_token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE0MTU1Nzc4MTQyNzg2MDc5MDEiLCJpYXQiOjE1NzI3OTQ5NzUsImV4cCI6MTU3Mjc5ODU3NX0.CZ5hweQK9oqdX6xw6pih1HG-ZdHbBXuc1m0oQCp2YNQ"
+        "400":
+          description: Địa chỉ Email này chưa được đăng ký || Mật khẩu của bạn không chính xác
+        "500":
+          description: Lỗi truy vấn thông tin người dùng
+  /users/function:
+    get:
+      tags:
+        - user
+      summary: Lấy thông tin và chức năng của người dùng
+      description: Đưa ra các chức năng mà người dùng có thể sử dụng trên hệ thống
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về thông tin người dùng hệ thống
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "1415577814278607901"
+                      name:
+                        type: string
+                        example: "Nguyen Van A"
+                      email:
+                        type: string
+                        example: "ahihi@gmail.com"
+                      role_id:
+                        type: string
+                        example: "1410453112988111873"
+                      created_time:
+                        type: string
+                        example: "2019-10-24T03:36:22.193Z"
+                      updated_time:
+                        type: string
+                        example: "2019-10-24T03:36:22.193Z"
+                  func:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "1415532557738447873"
+                      name:
+                        type: string
+                        example: "Get Hot Keys"
+                      description:
+                        type: string
+                        example: "Lấy tất cả hot keys"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          description: Lỗi truy vấn thông tin người dùng
+  /users/status:
+    post:
+      tags:
+        - user
+      summary: Thay đổi trạng thái của người dùng
+      description: Có thể block or unblock người dùng
+      security:
+        - OSIP: []
+      parameters:
+        - in: query
+          name: status
+          required: true
+          schema:
+            type: integer
+            example: 0
+          description: Trạng thái của người dùng (0 là không hoạt động, 1 là đang hoạt động)
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: integer
+            example: 1433991521870288021
+          description: Địa chỉ ID của User
+      responses:
+        "200":
+          description: Thay đổi trạng thái người dùng thành công
+        "500":
+          description: Lỗi chỉnh sửa trạng thái của người dùng
+        "403":
+          description: Bạn không có quyền chỉnh sửa trạng thái của người dùng
+  /users/assign-role:
+    post:
+      tags:
+        - user
+      summary: Thay đổi trạng thái của người dùng
+      description: Có thể block or unblock người dùng
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: integer
+            example: 1433991521870288021
+          description: Địa chỉ ID của User
+        - in: query
+          name: role_id
+          required: true
+          schema:
+            type: integer
+            example: 1433652622107087947
+          description: Địa chỉ ID của Role
+      responses:
+        "200":
+          description: Cài đặt vai cho cho người dùng thành công
+        "500":
+          description: Lỗi cài đặt vai cho cho người dùng
+  /users/all:
+    get:
+      tags:
+        - user
+      summary: Lấy danh sách người dùng của hệ thống
+      description: Liệt kê danh sách người dùng của hệ thống
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Danh sách người dùng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "1434072958476752035"
+                        name:
+                          type: string
+                          example: "Tran Van A"
+                        email:
+                          type: string
+                          example: "tva@gmail.com"
+                        password:
+                          type: string
+                          example: "$2b$10$NTcpwXQjxKrzgbz65n7theXDNHMGIBrhqFY0nbIfUIqCnESw46Xlu"
+                        role_id:
+                          type: string
+                          example: "1414486229885391874"
+                        avatar_url:
+                          type: string
+                          example: "https://lh3.googleusercontent.com/-fWLtCjE-brE/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcI4HMQaIG0nfAIg5a_Pwo5_awuUw.CMID/s64-c/photo.jpg"
+                        created_time:
+                          type: string
+                          example: "2019-11-18T16:02:55.647Z"
+                        updated_time:
+                          type: string
+                          example: "2019-11-18T16:02:55.647Z"
+                        status:
+                          type: integer
+                          example: 1
+
+        "500":
+          description: Lỗi truy vấn danh sách người dùng
+  /users/update:
+    put:
+      tags:
+        - user
+      summary: Cập nhật thông tin người dùng
+      description: Cập nhật thông tin người dùng của hệ thống
+      parameters:
+        - in: query
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Test Short"
+                email:
+                  type: string
+                  example: "testupdate@gmail.com"
+                role_id:
+                  type: string
+                  example: "1414486229885391874"
+                avatar_url:
+                  type: string
+                  example: "https://lh3.googleusercontent.com/-fWLtCjE-brE/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcI4HMQaIG0nfAIg5a_Pwo5_awuUw.CMID/s64-c/photo.jpg"
+                status:
+                  type: integer || string
+                  example: 0
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Cập nhật thông tin người dùng thành công
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi cập nhật thông tin người dùng
+  /users/delete:
+    delete:
+      tags:
+        - user
+      summary: Xoá người dùng bằng email
+      description: Xoá người dùng của hệ thống bằng địa chỉ email đăng ký
+      parameters:
+        - in: query
+          name: email,
+          required: true
+          schema:
+            type: string
+            example: "tva@gmail.com"
+          description: Địa chỉ ID của user
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Xoá thông tin người dùng thành công
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi xoá người dùng hệ thống
+  /users/reset-password:
+    post:
+      tags:
+        - user
+      summary: Thay đổi mật khẩu của người dùng
+      description: API thay đổi mật khẩu của người dùng
+      parameters:
+        - in: query
+          name: new_pass_word
+          required: true
+          schema:
+            type: string
+            example: "test"
+          description: Mật khẩu mới muốn thay đổi
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+            example: "1441300247585232176"
+          description: Địa chỉ ID của người dùng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Thay đổi mật khẩu thành công
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "404":
+          description: Không tìm thấy thông tin người dùng
+        "500":
+          description: Lỗi thay đổi mật khẩu
+  /functions:
+    get:
+      tags:
+        - function
+      summary: Lấy tất cả chức năng của hệ thống
+      description: Trả về danh sách chức năng của hệ thống
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về thông tin người dùng hệ thống
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1424683639873999879"
+                    short:
+                      type: string
+                      example: "Short Info"
+                    name:
+                      type: string
+                    example: "Name Info"
+                    description:
+                      type: string
+                      example: "Description Info"
+                    level:
+                      type: integer
+                      example: 1
+                    parent_id:
+                      type: string
+                      example: "1424683639873999899"
+                    status:
+                      type: integer
+                      example: 1
+                    on_menu:
+                      type: integer
+                      example: 1
+                    sort:
+                      type: integer
+                      example: 1
+                    icon:
+                      type: string
+                      example: "ABC123"
+                    link:
+                      type: string
+                      example: "133ABC"
+        "500":
+          description: Lỗi truy vấn chức năng
+  /functions/create:
+    post:
+      tags:
+        - function
+      summary: Tạo chức năng cho hệ thống
+      description: Tạo ra các chức năng mà người dùng có thể sử dụng trên hệ thống
+      security:
+        - OSIP: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short:
+                  type: string
+                  example: "Test Short"
+                name:
+                  type: string
+                  example: "Test Name"
+                description:
+                  type: string
+                  example: "Test Desciption"
+                level:
+                  type: integer || string
+                  example: 0
+                parent_id:
+                  type: string
+                  example: "1415548202492367874"
+                status:
+                  type: integer || string
+                  example: 0
+                on_menu:
+                  type: integer || string
+                  example: 0
+                sort:
+                  type: integer || string
+                  example: 1
+                icon:
+                  type: string
+                  example: "abc123"
+                link:
+                  type: string
+                  example: "123abc"
+      responses:
+        "200":
+          description: Tạo chức năng thành công
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          description: Lỗi tạo chức năng người dùng
+  /functions/{id}:
+    get:
+      tags:
+        - function
+      summary: Lấy thông tin của từng chức năng
+      description: Đưa ra thông tin của từng chức năng
+      parameters:
+        - in: path
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về thông tin của chức năng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "1424683639873999879"
+                  short:
+                    type: string
+                    example: "Short Info"
+                  name:
+                    type: string
+                    example: "Name Info"
+                  description:
+                    type: string
+                    example: "Description Info"
+                  level:
+                    type: integer
+                    example: 1
+                  parent_id:
+                    type: string
+                    example: "1424683639873999899"
+                  status:
+                    type: integer
+                    example: 1
+                  on_menu:
+                    type: integer
+                    example: 1
+                  sort:
+                    type: integer
+                    example: 1
+                  icon:
+                    type: string
+                    example: "ABC123"
+                  link:
+                    type: string
+                    example: "133ABC"
+
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          description: Không tìm thấy thông tin cho chức năng
+        "500":
+          description: Lỗi truy vấn thông tin chức năng
+  /functions/update/{id}:
+    put:
+      tags:
+        - function
+      summary: Cập nhật chức năng cho hệ thống
+      description: Cập nhật chức năng mà người dùng có thể sử dụng trên hệ thống
+      parameters:
+        - in: path
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                short:
+                  type: string
+                  example: "Test Short"
+                name:
+                  type: string
+                  example: "Test Name"
+                description:
+                  type: string
+                  example: "Test Desciption"
+                level:
+                  type: integer || string
+                  example: 0
+                parent_id:
+                  type: string
+                  example: "1415548202492367874"
+                status:
+                  type: integer || string
+                  example: 0
+                on_menu:
+                  type: integer || string
+                  example: 0
+                sort:
+                  type: integer || string
+                  example: 1
+                icon:
+                  type: string
+                  example: "abc123"
+                link:
+                  type: string
+                  example: "123abc"
+      responses:
+        "200":
+          description: Cập nhật thông tin chức năng thành công
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+            description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi cập nhật thông tin chức năng
+  /functions/delete/{id}:
+    delete:
+      tags:
+        - function
+      summary: Xoá chức năng của hệ thống
+      description: Xoá chức năng của hệ thống theo ID
+      parameters:
+        - in: path
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Xoá chức năng thành công
+        "500":
+          description: Lỗi khi xoá chức năng
+  /roles/member/{id}:
+    post:
+      tags:
+        - role
+      summary: Cài đặt chức năng cho member
+      description: Thêm chức năng cho member
+      parameters:
+        - in: path
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Cài đặt chức năng cho member thành công
+        "500":
+          description: Lỗi cài đặt chức năng cho member
+  /roles/admin/{id}:
+    post:
+      tags:
+        - role
+      summary: Cài đặt chức năng cho admin
+      description: Thêm chức năng cho admin
+      parameters:
+        - in: path
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Cài đặt chức năng cho admin thành công
+        "500":
+          description: Lỗi cài đặt chức năng cho admin
+  /roles/admin:
+    get:
+      tags:
+        - role
+      summary: Lấy tât cả chức năng cho admin
+      description: Liệt kê danh sách chức năng cho admin
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Danh sách chức năng của admin
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1426062215324111877"
+                    role_id:
+                      type: string
+                      example: "1410453112988111873"
+                    func_id:
+                      type: string
+                    example: "1415532557738447873"
+                    
+        "500":
+          description: Lỗi truy vấn danh sách chức năng cho admin
+  /roles/member:
+    get:
+      tags:
+        - role
+      summary: Lấy tât cả chức năng cho member
+      description: Liệt kê danh sách chức năng cho member
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Danh sách chức năng của member
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1426062215324111877"
+                    role_id:
+                      type: string
+                      example: "1410453112988111873"
+                    func_id:
+                      type: string
+                    example: "1415532557738447873"
+                    
+        "500":
+          description: Lỗi truy vấn danh sách chức năng cho member
+  /roles/all:
+    get:
+      tags:
+        - role
+      summary: Lấy tât cả role của hệ thống
+      description: Liệt kê danh sách role và function của từng role tương ứng của hệ thống
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Danh sách chức năng của hệ thống
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "1424683639873999879"
+                      name:
+                        type: string
+                        example: "admin"
+                      label:
+                        type: string
+                        example: "Label"
+                      description:
+                        type: string
+                        example: "Description"
+                      is_changeable:
+                        type: integer
+                        example: 1
+                      funcs:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1426070771704271882"
+                            short:
+                              type: string
+                              example: "Test Short"
+                            name:
+                              type: string
+                              example: "Test Name"
+                            description:
+                              type: string
+                              example: "Test Desciption"
+                            level:
+                              type: integer || string
+                              example: 0
+                            parent_id:
+                              type: string
+                              example: "1415548202492367874"
+                            status:
+                              type: integer || string
+                              example: 0
+                            on_menu:
+                              type: integer || string
+                              example: 0
+                            sort:
+                              type: integer || string
+                              example: 1
+                            icon:
+                              type: string
+                              example: "abc123"
+                            link:
+                              type: string
+                              example: "123abc"                    
+        "500":
+          description: Lỗi truy vấn danh sách chức năng
+  /roles/add:
+    post:
+      tags:
+        - role
+      summary: Thêm role
+      description: Thêm role cho hệ thống
+      security:
+        - OSIP: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Test role"
+                label:
+                  type: string
+                  example: "Test label"
+                description:
+                  type: string
+                  example: "Test desc"
+                is_changeable:
+                  type: integer || string
+                  example: 0
+      responses:
+        "200":
+          description: Tạo role mới thành công
+        "500":
+          description: Lỗi tạo mới role
+        "403":
+          description: Đã tồn tại role
+  /roles/edit:
+    put:
+      tags:
+        - role
+      summary: Chỉnh sửa role
+      description: Chỉnh sửa role cho hệ thống
+      parameters:
+        - in: query
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của role
+      security:
+        - OSIP: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Test role"
+                label:
+                  type: string
+                  example: "Test label"
+                description:
+                  type: string
+                  example: "Test desc"
+                is_changeable:
+                  type: integer || string
+                  example: 0
+      responses:
+        "200":
+          description: Cập nhật role thành công
+        "404":
+          description: Không tồn tại role
+        "500":
+          description: Lỗi chỉnh sửa role
+  /roles/delete:
+    delete:
+      tags:
+        - role
+      summary: Xoá role
+      description: Xoá role cho hệ thống
+      parameters:
+        - in: query
+          name: id,
+          required: true
+          schema:
+            type: integer
+            example: 1424683639873999879
+          description: Địa chỉ ID của role
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Xoá role thành công
+        "404":
+          description: Không tồn tại role
+        "500":
+          description: Lỗi xoá role
+  /roles/assign:
+    post:
+      tags:
+        - role
+      summary: Cài đặt chức năng cho Role ID
+      description: Cài đặt function id cho role id
+      parameters:
+        - in: query
+          name: role_id
+          required: true
+          schema:
+            type: integer
+            example: 1414486229885391874
+          description: Địa chỉ ID của Role
+        - in: query
+          name: func_id
+          required: true
+          schema:
+            type: integer
+            example: 1415532557738447873
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Cài đặt chức năng thành công
+        "500":
+          description: Lỗi cài đặt chức năng
+        "404": 
+          description: Không tìm thấy thông tin chức năng
+  /roles/unassign:
+    post:
+      tags:
+        - role
+      summary: Huỷ cài đặt chức năng cho Role ID
+      description: Huỷ cài đặt function id cho role id
+      parameters:
+        - in: query
+          name: role_id
+          required: true
+          schema:
+            type: integer
+            example: 1414486229885391874
+          description: Địa chỉ ID của Role
+        - in: query
+          name: func_id
+          required: true
+          schema:
+            type: integer
+            example: 1415532557738447873
+          description: Địa chỉ ID của chức năng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Huỷ cài đặt chức năng thành công
+        "500":
+          description: Lỗi huỷ cài đặt chức năng
+        "400":
+          description: Chức năng này chưa được cài đặt cho role
+        "404":
+          description: Không tìm thấy thông tin chức năng
+  /api/hotwords:
+    get:
+      tags:
+        - hotwords
+      summary: Lấy danh sách hot words
+      description: Đưa ra danh sách hot words của các bên như (Sendo, Shopee, Tiki, Google)
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về danh sách hot hot words
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                  type: array
+                  hot_words:
+                    type: object
+                    properties:
+                      sendo:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1433129131024847934"
+                            name:
+                              type: string
+                              example: "áo len nam"
+                            count:
+                              type: string
+                              example: "1052353"
+                            source:
+                              type: string
+                              example: "sendo"
+                      shoppe:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1433138702426575950"
+                            name:
+                              type: string
+                              example: "gọng kính cận"
+                            count:
+                              type: string
+                              example: "1052353"
+                            source:
+                              type: string
+                              example: "shoppe"
+                      tiki:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1433141705548239965"
+                            name:
+                              type: string
+                              example: "balo"
+                            count:
+                              type: string
+                              example: "672136"
+                            source:
+                              type: string
+                              example: "tiki"
+                      google:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1433146352837071975"
+                            name:
+                              type: string
+                              example: "Việt Nam Thái Lan 19/11"
+                            count:
+                              type: string
+                              example: "718412"
+                            source:
+                              type: string
+                              example: "google"  
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          description: Lỗi truy vấn hot words
+  /api/promotions:
+    get:
+      tags:
+        - promotions
+      summary: Lấy danh sách mã giảm giá
+      description: Đưa ra danh sách mã giảm giá
+      parameters:
+        - in: query
+          name: sort_type
+          required: true
+          schema:
+            type: string
+            example: newest
+          description: most_view(xem nhiều nhất) || newest(mới nhất) || discount_highest(Giảm giá sâu ) || expires(sắp hết hạn)
+        - in: query
+          name: screen_type
+          required: true
+          schema:
+            type: string
+            example: an
+          description: an(Đồ ăn) || uong(Đồ uống) || giai-tri(Giải trí) || lam-dep(Làm đẹp)
+        - in: query
+          name: offset
+          required: true
+          schema:
+            type: string
+            example: 0
+          description: Giá trị offset
+        - in: query
+          name: limit
+          required: true
+          schema:
+            type: string
+            example: 100
+          description: Giá trị limit
+        - in: query
+          name: province
+          required: true
+          schema:
+            type: string
+            example: ha-noi
+          description: ha-noi(Hà Nội) || tp-hcm(Thành phố Hồ Chí Minh) || da-nang(Đà Nẵng) || hai-phong(Hải phòng)
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về danh sách mã giảm giá
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  promotions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "1438027658666448762"
+                        title:
+                          type: string
+                          example: "Gyu-Kaku: CHỈ 178K BUFFET NƯỚNG TOKYO"
+                        brand:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1437638536307151873"
+                            name:
+                              type: string
+                              example: "Hot N Tasty"
+                            description:
+                              type: string
+                              example: "Test Des"
+                            image:
+                              type: string
+                              example: "https://img.jamja.vn/jamja-prod/gcs_full_5767bce36e0b496c23f85987-2016-06-20-095405.jpg?cache=1"
+                        store:
+                          type: string
+                          example: "4 cửa hàng"
+                        number_of_percent_deal:
+                          type: integer
+                          example: 10
+                        rating:
+                          type: string
+                          example: "4.559523809523813"
+                        deal_url:
+                          type: string
+                          example: "https://jamja.vn/khuyen-mai/gyu-kaku/gyu-kaku-buffet-nuong-tokyo-0"
+                        image_url:
+                          type: string
+                          example: "https://img.jamja.vn/jamja-prod/5c2dfd6476ec575433f2c56b-2019-01-03-121740-0.png?cache=1"
+                        start_sale_time:
+                          type: string
+                          example: "2019-02-16T17:00:00.000Z"
+                        end_sale_time:
+                          type: string
+                          example: "2019-12-30T17:00:00.000Z"
+                        sort_type:
+                          type: string
+                          example: "most_view"
+                        screen_type:
+                          type: string
+                          example: "an"
+                        province:
+                          type: string
+                          example: "ha-noi"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "404":
+          description: Không tìm thấy danh sách mã giảm giá
+        "500":
+          description: Lỗi truy vấn hot words
+  /api/promotions/search:
+    get:
+      tags:
+        - promotions
+      summary: Tìm kiếm danh sách mã giảm giá
+      description: Đưa ra danh sách mã giảm giá
+      parameters:
+        - in: query
+          name: sort_type
+          required: true
+          schema:
+            type: string
+            example: newest
+          description: most_view(xem nhiều nhất) || newest(mới nhất) || discount_highest(Giảm giá sâu ) || expires(sắp hết hạn)
+        - in: query
+          name: key_word
+          required: true
+          schema:
+            type: string
+            example: an
+          description: Đồ ăn
+        - in: query
+          name: offset
+          required: true
+          schema:
+            type: string
+            example: 0
+          description: Giá trị offset
+        - in: query
+          name: limit
+          required: true
+          schema:
+            type: string
+            example: 100
+          description: Giá trị limit
+        - in: query
+          name: province
+          required: true
+          schema:
+            type: string
+            example: ha-noi
+          description: ha-noi(Hà Nội) || tp-hcm(Thành phố Hồ Chí Minh) || da-nang(Đà Nẵng) || hai-phong(Hải phòng)
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về danh sách mã giảm giá
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  promotions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "1438027658666448762"
+                        title:
+                          type: string
+                          example: "Gyu-Kaku: CHỈ 178K BUFFET NƯỚNG TOKYO"
+                        brand:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1437638536307151873"
+                            name:
+                              type: string
+                              example: "Hot N Tasty"
+                            description:
+                              type: string
+                              example: "Test Des"
+                            image:
+                              type: string
+                              example: "https://img.jamja.vn/jamja-prod/gcs_full_5767bce36e0b496c23f85987-2016-06-20-095405.jpg?cache=1"
+                        store:
+                          type: string
+                          example: "4 cửa hàng"
+                        number_of_percent_deal:
+                          type: integer
+                          example: 10
+                        rating:
+                          type: string
+                          example: "4.559523809523813"
+                        deal_url:
+                          type: string
+                          example: "https://jamja.vn/khuyen-mai/gyu-kaku/gyu-kaku-buffet-nuong-tokyo-0"
+                        image_url:
+                          type: string
+                          example: "https://img.jamja.vn/jamja-prod/5c2dfd6476ec575433f2c56b-2019-01-03-121740-0.png?cache=1"
+                        start_sale_time:
+                          type: string
+                          example: "2019-02-16T17:00:00.000Z"
+                        end_sale_time:
+                          type: string
+                          example: "2019-12-30T17:00:00.000Z"
+                        sort_type:
+                          type: string
+                          example: "most_view"
+                        screen_type:
+                          type: string
+                          example: "an"
+                        province:
+                          type: string
+                          example: "ha-noi"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "404":
+          description: Không tìm thấy danh sách mã giảm giá
+        "500":
+          description: Lỗi truy vấn hot words
+  /api/suggests:
+    get:
+      tags:
+        - suggestwords
+      summary: Lấy danh sách từ gợi ý
+      description: Đưa ra danh sách từ gợi ý
+      parameters:
+        - in: query
+          name: keyword
+          required: true
+          schema:
+            type: string
+            example: quần
+          description: Từ khoá muốn tìm kiếm trên các sàn thương mại (lazada, shopee, tiki, sendo, chợ tốt, yes24)
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về danh sách từ gợi ý
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggest_words:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        keyword:
+                          type: string
+                          example: "quần nỉ"
+                        source:
+                          type: string
+                          example: "sendo"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+  /api/favorites/all:
+    get:
+      tags:
+        - favorites
+      summary: Lấy danh sách mã giảm giá được yêu thích
+      description: Đưa ra danh sách mã giảm giá được người dùng yêu thích
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về danh sách những mã giảm giá được người dùng yêu thích trên hệ thống
+          content:
+            application/json:
+              schema:
+                type: object
+                favorites:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "1441269981487567936"
+                      user_id:
+                        type: string
+                        example: "1440615133192656163"
+                      promotion_id:
+                        type: string
+                        example: "1438023867015632643"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi truy vấn danh sách thông tin yêu thích
+  /api/favorites:
+    get:
+      tags:
+        - favorites
+      summary: Lấy danh sách mã giảm giá mà người dùng yêu thích
+      description: Đưa ra danh sách mã giảm giá được người dùng yêu thích
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+            example: "1441300247585232176"
+          description: Địa chỉ ID của người dùng
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về thông tin người dùng hệ thống
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "1415577814278607901"
+                      name:
+                        type: string
+                        example: "Nguyen Van A"
+                      email:
+                        type: string
+                        example: "ahihi@gmail.com"
+                      role_id:
+                        type: string
+                        example: "1410453112988111873"
+                      created_time:
+                        type: string
+                        example: "2019-10-24T03:36:22.193Z"
+                      updated_time:
+                        type: string
+                        example: "2019-10-24T03:36:22.193Z"
+                  promotions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "1438027658666448762"
+                        title:
+                          type: string
+                          example: "Gyu-Kaku: CHỈ 178K BUFFET NƯỚNG TOKYO"
+                        brand:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "1437638536307151873"
+                            name:
+                              type: string
+                              example: "Hot N Tasty"
+                            description:
+                              type: string
+                              example: "Test Des"
+                            image:
+                              type: string
+                              example: "https://img.jamja.vn/jamja-prod/gcs_full_5767bce36e0b496c23f85987-2016-06-20-095405.jpg?cache=1"
+                        store:
+                          type: string
+                          example: "4 cửa hàng"
+                        number_of_percent_deal:
+                          type: integer
+                          example: 10
+                        rating:
+                          type: string
+                          example: "4.559523809523813"
+                        deal_url:
+                          type: string
+                          example: "https://jamja.vn/khuyen-mai/gyu-kaku/gyu-kaku-buffet-nuong-tokyo-0"
+                        image_url:
+                          type: string
+                          example: "https://img.jamja.vn/jamja-prod/5c2dfd6476ec575433f2c56b-2019-01-03-121740-0.png?cache=1"
+                        start_sale_time:
+                          type: string
+                          example: "2019-02-16T17:00:00.000Z"
+                        end_sale_time:
+                          type: string
+                          example: "2019-12-30T17:00:00.000Z"
+                        sort_type:
+                          type: string
+                          example: "most_view"
+                        screen_type:
+                          type: string
+                          example: "an"
+                        province:
+                          type: string
+                          example: "ha-noi"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi truy vấn danh sách thông tin yêu thích
+  /api/favorites/assign:
+    post:
+      tags:
+        - favorites
+      summary: Gán mã giảm giá mà cho người dùng
+      description: Gán mã giảm giá mà người dùng yêu thích
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+            example: "1441300247585232176"
+          description: Địa chỉ ID của người dùng
+        - in: query
+          name: promotion_id
+          schema:
+            type: string
+            example: "1438023867015632643"
+            description: Địa chỉ ID của mã giảm giá
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Chọn mã giảm giá thành công
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "404":
+          description: Không tìm thấy thông tin người dùng
+        "500":
+          description: Lỗi chọn mã giảm giá
+  /api/favorites/unassign:
+    post:
+      tags:
+        - favorites
+      summary: Huỷ mã giảm giá được yêu thích
+      description: Huỷ mã giảm giá mà người dùng yêu thích
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+            example: "1441300247585232176"
+          description: Địa chỉ ID của người dùng
+        - in: query
+          name: promotion_id
+          schema:
+            type: string
+            example: "1438023867015632643"
+            description: Địa chỉ ID của mã giảm giá
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Huỷ chọn mã giảm giá thành công
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "404":
+          description: Không tìm thấy thông tin mã giảm giá
+        "500":
+          description: Lỗi truy vấn thông tin người dùng
+  /api/favorites/update:
+    put:
+      tags:
+        - favorites
+      summary: Cập nhật mã giảm giá được yêu thích
+      description: Cập nhật mã giảm giá được người dùng yêu thích
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: string
+            example: "1441300247585232176"
+          description: Địa chỉ ID của người dùng
+        - in: query
+          name: promotion_id
+          schema:
+            type: string
+            example: "1438023867015632643"
+          description: Địa chỉ ID của mã giảm giá
+        - in: query
+          name: favorite_id
+          schema:
+            type: string
+            example: "1441983373877711974"
+          description: Địa chỉ ID của favorite
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Cập nhật thông tin yêu thích thành công
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi cập nhật thông tin yêu thích
+  /api/favorites/delete:
+    delete:
+      tags:
+        - favorites
+      summary: Xoá mã giảm giá được yêu thích bằng id
+      description: Xoá mã giảm giá được yêu thích bằng id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: ""
+          description: Từ khoá muốn tìm kiếm trên các sàn thương mại (lazada, shopee, tiki, sendo, chợ tốt, yes24)
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Xoá thông tin yêu thích thành công
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi khi xoá thông tin yêu thích
+  /api/flashsale:
+    get:
+      tags:
+        - flashsale
+      summary: Lấy danh sách flash sale
+      description: Đưa ra danh sách mã flash sale trên các trang thương mại điện tử như (shopee, tiki, sendo)
+      parameters:
+        - in: query
+          name: source
+          required: true
+          schema:
+            type: string
+            example: 1
+          description: 1 (shopee), 3(tiki), 4(sendo)
+        - in: query
+          name: offset
+          required: true
+          schema:
+            type: string
+            example: 1
+          description: Giá trị offset (NOTE Không lấy giá trị 0)
+        - in: query
+          name: limit
+          required: true
+          schema:
+            type: string
+            example: 100
+          description: Giá trị limit
+      security:
+        - OSIP: []
+      responses:
+        "200":
+          description: Trả về danh sách mã flash sale
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flash_sales:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sku:
+                          type: string
+                          example: "8064553338623"
+                        platform:
+                          type: string
+                          example: "3"
+                        product_name:
+                          type: string
+                          example: "Ấm Điện Thủy Tinh Siêu Tốc Lock&Lock EJK418BLK (1.8L) - Hàng chính hãng"
+                        price:
+                          type: integer
+                          example: 399000
+                        classify_price:
+                          type: string
+                          example: "best"
+                        price_before_discount:
+                          type: integer
+                          example: 869000
+                        url_direct:
+                          type: string
+                          example: "https://tiki.vn/am-dien-thuy-tinh-sieu-toc-lock-lock-ejk418blk-1-8l-hang-chinh-hang-p1457793.html?spid=1457795"
+                        flash_sale_stock:
+                          type: integer
+                          example: 409
+                        flash_sale_order_count:
+                          type: integer
+                          example: 591
+                        url_images:
+                          type: string
+                          example: "https://salt.tikicdn.com/cache/280x280/ts/product/a1/86/fd/613babb8911be3072104a06d72c0440b.jpg"
+                        flash_sale_start_at:
+                          type: string
+                          example: "2019-12-04T19:00:00+07:00"
+                        flash_sale_end_at:
+                          type: string
+                          example: "2019-12-13T23:59:00+07:00"
+        "401":
+          description: Trả về lỗi không xác định được người dùng
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/UnauthorizedError"
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi truy vấn danh sách flash sale
+  /api/email/send:
+    post:
+      tags:
+        - email
+      summary: Gửi mã OTP cho người dùng
+      description: Gữi mã OTP cho người dùng xác nhận
+      responses:
+        "200":
+          description: Gửi mã OTP tới địa chỉ email của bạn thành công
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi khi gửi mã xác nhận email
+  /api/email/check:
+    get:
+      tags:
+        - email
+      summary: Kiểm tra mã OTP người dùng nhập
+      description: Kiểm tra mã OTP có đúng không
+      parameters:
+        - in: path
+          name: verification_code
+          required: true
+          schema:
+            type: string
+            example: "lkasjf"
+          description: Mã OTP được gửi tới email người dùng
+      responses:
+        "200":
+          description: Xác thực mã OTP thành công
+        "400":
+          description: Tham số truyền vào không hợp lệ
+        "500":
+          description: Lỗi xác thực mã xác nhận
+components:
+  securitySchemes:
+    OSIP:
+      type: apiKey
+      name: Authorization
+      in: header
+  responses:
+    UnauthorizedError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Bạn không được phép truy cập
+        code:
+          type: integer
+          format: int64
+          example: 401
